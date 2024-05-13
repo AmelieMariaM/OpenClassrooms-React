@@ -1,10 +1,16 @@
 import "../styles/Cart.css";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function Cart({ cart, updateCart }) {
-  const monsteraPrice = 8;
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
+  const total = cart.reduce(
+    (acc, plantType) => acc + plantType.amount * plantType.price,
+    0
+  );
+  useEffect(() => {
+    document.title = `LMJ: ${total}€ d'achats`;
+  }, [total]);
 
   return isOpen ? (
     <div className="lmj-cart">
@@ -14,12 +20,21 @@ function Cart({ cart, updateCart }) {
       >
         Fermer
       </button>
-      <h2>Panier</h2>
-      <div>
-        Monstera: {monsteraPrice}€
-        <button onClick={() => updateCart(0)}>Vider le panier</button>
-      </div>
-      <h3>Total: {monsteraPrice * cart}€</h3>
+      {cart.length > 0 ? (
+        <div>
+          <ul>
+            {cart.map(({ name, price, amount }, index) => (
+              <div key={`${name}-${index}`}>
+                {name} {price}€ x {amount}
+              </div>
+            ))}
+          </ul>
+          <h3>Total :{total}€</h3>
+          <button onClick={() => updateCart([])}>Vider le panier</button>
+        </div>
+      ) : (
+        <div>Votre panier est vide</div>
+      )}
     </div>
   ) : (
     <div className="lmj-cart-closed">
